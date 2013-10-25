@@ -8,13 +8,15 @@
 #
 
 
-node[:populate][:queries].each do |q|
+node[:populate][:queries].each do |q| 
 	res = search(q[:index], q[:query]).map do |e| 
-		if q[:fields].kind_of? String 
-			e[q[:fields]]
-		elsif q[:fields].class.to_s.contains? "Array"
-			q[:fields].map { |f| e[f] }			
+		q[:fields].map do |f| 
+			if f[:append].nil?
+				e[f[:name]] 
+			else 
+			"#{e[f[:name]]}#{f[:append]}" 
 		end
-	end 
+	end
 	eval "#{q[:dest]} = res" unless res != nil
 end
+
